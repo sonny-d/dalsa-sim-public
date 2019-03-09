@@ -67,7 +67,7 @@ Clone or download source code from github.
 ### Camera Simulator (camsim)
 Navigate into the folder that contains the project folder (ie `cd \Dev\projects\reticle-sim`). Then run:
 ```
-python camsim
+python dalsasim
 ```
 
 ### Development Tester (devtester)
