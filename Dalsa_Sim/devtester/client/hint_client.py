@@ -1,8 +1,8 @@
 # Dalsa_Sim/dalsa_hint_server/hint_server_client.py
 
 from client import Client
-from . import cam_client_name
-from . import cam_port
+# from . import cam_client_name
+# from . import cam_port
 from log.log import file_handler
 import logging
 
@@ -17,9 +17,9 @@ hintserver_client_log.addHandler(file_handler)
 
 class HintClient(Client):
 
-    def __init__(self, h_port=cam_port, hint_client_nam=cam_client_name):
+    def __init__(self, cam_hostname, hint_port, hint_client_name):
         # Inheriting dalsa_client and instantiating it to hint port with appropriate name
-        super(HintClient, self).__init__(client_port=h_port, client_name=hint_client_nam)
+        super(HintClient, self).__init__(server_hostname=cam_hostname, client_port=hint_port, client_name=hint_client_name)
         hintserver_client_log.info('Created Instance of %s on Port %s', self.client_name, self.client_port)
 
 
@@ -28,7 +28,9 @@ class HintClient(Client):
 if __name__ == "__main__":
     port = 5024
     client_name = "Hint Client"
-    hint_client = HintClient(port, client_name)
+    hostname = "localhost"
+    hint_client = HintClient(hostname, port, client_name)
+    print "Hostname is: " + hint_client.host_name
     hint_client.connect()
     response = hint_client.send('Hello my name is brendino 20380y89h349f93n4f834nf930$')
     print "On: " + hint_client.client_name + "  Success Status: " + str(response)

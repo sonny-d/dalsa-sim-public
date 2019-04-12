@@ -1,1 +1,0 @@
-This is the base destination folder for logging files. Logs for camsim and devteser should be dropped here.

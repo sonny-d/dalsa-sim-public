@@ -11,6 +11,7 @@ from log.log import file_handler
 server_server_log = logging.getLogger('dalsasim.server.server')
 server_server_log.setLevel(logging.DEBUG)
 server_server_log.addHandler(file_handler)
+
 # -------------------------------------
 hostname = socket.gethostname()
 
@@ -28,7 +29,6 @@ class Server(object):
     server_socket = None  # type: socket
     SUCCESS_MSG = "SUCCESS"
     FAIL_MSG = "FAILURE"
-
 
     def __init__(self, server_port, server_name, server_connection=None, server_socket=None):
         super(Server, self).__init__()
@@ -59,7 +59,9 @@ class Server(object):
 
             try:
                 # Trying to bind the socket to the port and hostname
-                self.socket.bind((hostname, self.server_port))
+                # Leaving hostname as '' allows it to accept any: "localhost", "127.0.0.1", or machine name
+                # self.socket.bind((hostname, self.server_port))
+                self.socket.bind(('', self.server_port))
                 # Will return the object with the binned socket
             # Catching Errors
             except (socket.error, socket.timeout, socket.herror, socket.gaierror) as e:

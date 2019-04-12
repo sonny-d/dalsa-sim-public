@@ -2,7 +2,7 @@ import csv
 import os
 import json
 
-from log import dalsa_qr_log
+import log
 from camsim.barcode import test_file
 
 
@@ -39,10 +39,10 @@ class QR(object):
         self.exposure = exposure
         self.status = '---- READY ----'
         if len(self.content) != 0:
-            dalsa_qr_log.info('Creating QR object with Content: %s', self.content)
+            log.info('Creating QR object with Content: %s', self.content)
         else:
             self.status = '---- ERROR ----'
-            dalsa_qr_log.error('Created QR with blank content: %s', self.status)
+            log.error('Created QR with blank content: %s', self.status)
         # Will serialize itself once created
 
     # ================================= #
@@ -53,7 +53,7 @@ class QR(object):
     # ================================= #
     def get_content(self):
         if self.content is None:
-            dalsa_qr_log.error('QR lacks content, cant getContent')
+            log.error('QR lacks content, cant getContent')
             self.status = '--- ERROR ----'
         return self.content
 
@@ -65,10 +65,10 @@ class QR(object):
     # ================================= #
     def set_content(self, content):
         if content is not None:
-            dalsa_qr_log.info('Setting content of QR: %s', content)
+            log.info('Setting content of QR: %s', content)
             self.content = content
         else:
-            dalsa_qr_log.error('Contents provided are None, Setting contents to: %s', content)
+            log.error('Contents provided are None, Setting contents to: %s', content)
             self.content = content
 
     # ================================= #
@@ -81,14 +81,14 @@ class QR(object):
         # Allowing to set either width or height. Dont need to provide both to method
         if width is None:
             self.height = height
-            dalsa_qr_log.info('Setting height %s', height)
+            log.info('Setting height %s', height)
         if height is None:
             self.width = width
-            dalsa_qr_log.info('Setting Width: %s', width)
+            log.info('Setting Width: %s', width)
         if width or height is not None:
             self.width = width
             self.height = height
-            dalsa_qr_log.error('Width or Height provided is None, Setting Width: %s Height: %s', width, height)
+            log.error('Width or Height provided is None, Setting Width: %s Height: %s', width, height)
 
     # ================================= #
     # Date : November 20, 2018
@@ -99,8 +99,8 @@ class QR(object):
     # ================================= #
     def get_dimension(self):
         if self.width or self.height is None:
-            dalsa_qr_log.error('Width: %s or Height: %s is None', self.width, self.height)
-        dalsa_qr_log.info('Returning Dimensions: %s %s', self.width, self.height)
+            log.error('Width: %s or Height: %s is None', self.width, self.height)
+        log.info('Returning Dimensions: %s %s', self.width, self.height)
         return self.width, self.height
 
     # ================================= #
@@ -112,7 +112,7 @@ class QR(object):
     # ================================= #
     def set_trigger_method(self, trigger_method):
         if self.trigger_method is None:
-            dalsa_qr_log.error('Trigger Method is None: %s', self.trigger_method)
+            log.error('Trigger Method is None: %s', self.trigger_method)
         self.trigger_method = trigger_method
 
     # ================================= #
@@ -124,9 +124,9 @@ class QR(object):
     # ================================= #
     def get_trigger_method(self):
         if self.trigger_method is None:
-            dalsa_qr_log.error('Trigger Method is None: %s', self.trigger_method)
+            log.error('Trigger Method is None: %s', self.trigger_method)
         else:
-            dalsa_qr_log.info('Setting Trigger Method to: %s', self.trigger_method)
+            log.info('Setting Trigger Method to: %s', self.trigger_method)
         return self.trigger_method
 
     # ================================= #
@@ -138,10 +138,10 @@ class QR(object):
     # ================================= #
     def set_color(self, color):
         if color is None:
-            dalsa_qr_log.error('Setting Color to None: %s', color)
+            log.error('Setting Color to None: %s', color)
             self.color = color
         else:
-            dalsa_qr_log.info('Setting Version to: %s', color)
+            log.info('Setting Version to: %s', color)
             self.color = color
 
     # ================================= #
@@ -153,8 +153,8 @@ class QR(object):
     # ================================= #
     def get_color(self):
         if self.color is None:
-            dalsa_qr_log.error('Color is None: %s', self.color)
-        dalsa_qr_log.info('Color: %s', self.color)
+            log.error('Color is None: %s', self.color)
+        log.info('Color: %s', self.color)
         return self.color
 
     # ================================= #
@@ -166,7 +166,7 @@ class QR(object):
     # ================================= #
     def set_brightness(self, brightness):
         if brightness is None:
-            dalsa_qr_log.error('Brightness provided is None')
+            log.error('Brightness provided is None')
         self.brightness = brightness
 
     # ================================= #
@@ -177,7 +177,7 @@ class QR(object):
     # Last Modified : February 14, 2018 BEN
     # ================================= #
     def get_brightness(self):
-        dalsa_qr_log.info('Brightness: %s', self.brightness)
+        log.info('Brightness: %s', self.brightness)
         return self.brightness
 
     # ================================= #
@@ -188,7 +188,7 @@ class QR(object):
     # ================================= #
     def set_contrast(self, contrast):
         if contrast is None:
-            dalsa_qr_log.error('Contrast provided is None')
+            log.error('Contrast provided is None')
         self.contrast = contrast
 
     # ================================= #
@@ -198,7 +198,7 @@ class QR(object):
     # Last Modified : February 14, 2018 BEN
     # ================================= #
     def get_contrast(self):
-        dalsa_qr_log.info('Contrast: %s', self.contrast)
+        log.info('Contrast: %s', self.contrast)
         return self.contrast
 
     # ================================= #
@@ -210,7 +210,7 @@ class QR(object):
     # ================================= #
     def set_exposure(self, exposure):
         if exposure is None:
-            dalsa_qr_log.error('Exposure provided is None')
+            log.error('Exposure provided is None')
         self.exposure = exposure
 
     # ================================= #
@@ -224,37 +224,37 @@ class QR(object):
     @staticmethod
     def fill_data_from_csv():
         # Add logging data
-        dalsa_qr_log.info('---- Opening file : %s', test_file)
-        dalsa_qr_log.info('---- Assigning Attributes from CSV to QR')
+        log.info('---- Opening file : %s', test_file)
+        log.info('---- Assigning Attributes from CSV to QR')
         with open(test_file) as f:
             # record_count = sum(1 for row in f)
             csv_data = csv.reader(f)  # data in using csv reader
             # Will cycle through whole file and make barcodes for each
             for row in csv_data:
-                dalsa_qr_log.info('%s RECORDS FOUND')
+                log.info('%s RECORDS FOUND')
                 content = row[0]
-                dalsa_qr_log.info('Content: %s', content)
+                log.info('Content: %s', content)
                 width = row[1]
-                dalsa_qr_log.info('Width: %s', width)
+                log.info('Width: %s', width)
                 height = row[2]
-                dalsa_qr_log.info('Height: %s', height)
+                log.info('Height: %s', height)
                 trigger_method = row[3]
-                dalsa_qr_log.info('Trigger Method: %s', trigger_method)
+                log.info('Trigger Method: %s', trigger_method)
                 color = row[4]
-                dalsa_qr_log.info('Color: %s', color)
+                log.info('Color: %s', color)
                 brightness = row[4]
-                dalsa_qr_log.info('Brightness: %s', brightness)
+                log.info('Brightness: %s', brightness)
                 contrast = row[5]
-                dalsa_qr_log.info('Contrast: %s', contrast)
+                log.info('Contrast: %s', contrast)
                 exposure = row[6]
                 temp_qr = QR(content, width, height, trigger_method, color, brightness, contrast, exposure)
                 if temp_qr.content is not None:
-                    dalsa_qr_log.info('Returning QR to Barcode:  %s', temp_qr)
+                    log.info('Returning QR to Barcode:  %s', temp_qr)
                 else:
-                    dalsa_qr_log.error('Qr has no Content: %s', temp_qr)
+                    log.error('Qr has no Content: %s', temp_qr)
                 return temp_qr
             f.close()
-        dalsa_qr_log.warning('QR info CSV file not found here: %s', str(os.getcwd()))
+        log.warning('QR info CSV file not found here: %s', str(os.getcwd()))
 
     # ================================= #
     # Date : November 20, 2018
@@ -268,5 +268,5 @@ class QR(object):
         try:
             json_str = json.dumps(json_str)
         except (ValueError, TypeError) as e:
-            dalsa_qr_log.error('Error while serializing: %s', e)
+            log.error('Error while serializing: %s', e)
         return json_str

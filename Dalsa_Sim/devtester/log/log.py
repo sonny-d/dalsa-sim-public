@@ -19,9 +19,9 @@ def get_file_path():
     """
     file_path = os.path.dirname(__file__)
     # Go up 2 dirs
-    for x in range(0, 3):
+    for x in range(0, 2):
         file_path = os.path.split(file_path)[0]
-        print str(file_path)
+        #print "DEBUG: Logger: Current file path is: " + str(file_path)
     # Return the result
     if len(file_path) is 0:
         #print "Log path not found, trying relative path..."
@@ -73,40 +73,13 @@ dalsa_sim_log.addHandler(file_handler)"""
 # ========================
 # 1st Level MAY NOT NEED TO HAVE THESE PACKAGES INSTANTIATED
 # ========================
-# Server (Package)
-"""server_log_main = logging.getLogger('dalsasim.server')  # type: logging
-server_log_main.setLevel(logging.DEBUG)
-server_log_main.addHandler(file_handler)"""
-# -------------------------------------
 
-# Command Process (Package)
-"""cmd_process_log_main = logging.getLogger('dalsasim.cmdprocess')  # type: logging
-cmd_process_log_main.setLevel(logging.DEBUG)
-cmd_process_log_main.addHandler(file_handler)"""
-# -------------------------------------
-
-# Camera Server (Package)
-"""primary_server_log = logging.getLogger('dalsasim.server.camserver')
-primary_server_log.setLevel(logging.DEBUG)
-primary_server_log.addHandler(file_handler)
-# primary_server_log.addHandler(socket_handler)"""
 # -------------------------------------
 
 
 # ========================
 # 2nd level
 # ========================
-
-# Main Structure Client Log (Class)
-
-
-# Main Structure Server Log (Class)
-
-
-# Command Process
-
-# Cam Server
-
 
 # hint_server_log.addHandler(socket_handler)
 # -------------------------------------
@@ -122,20 +95,25 @@ server_logserver_log.addHandler(file_handler)
 # ========================
 
 
-# Dalsa_Sim.dalsa_log_server
-dalsa_log_server = logging.getLogger('dalsasim.server.logserver.log_server_main')  # type: logging
-dalsa_log_server.setLevel(logging.DEBUG)
-dalsa_log_server.addHandler(file_handler)
+# cli log
+cli_tester_log = logging.getLogger('devtester.cli')
+cli_tester_log.setLevel(logging.DEBUG)
+cli_tester_log.addHandler(file_handler)
 
-
-
-# Hint Server (Class)
-hintserver_server_log = logging.getLogger('dalsasim.server.hintserver.hint_server')
-hintserver_server_log.setLevel(logging.DEBUG)
-hintserver_server_log.addHandler(file_handler)
+# Hint Client (Class)
+hintclient_log = logging.getLogger('devtester.client.hint_client')
+hintclient_log.setLevel(logging.DEBUG)
+hintclient_log.addHandler(file_handler)
 # hintserver_server_log.addHandler(socket_handler)
 # -------------------------------------
 
+client_log = logging.getLogger('devtester.client.hint_client')
+client_log.setLevel(logging.DEBUG)
+client_log.addHandler(file_handler)
+
+camclient_log = logging.getLogger('devtester.client.camclient')
+camclient_log.setLevel(logging.DEBUG)
+camclient_log.addHandler(file_handler)
 
 # Cam Server (Class)
 cam_server_log = logging.getLogger('dalsasim.server.camserver.cam_server')

@@ -8,7 +8,7 @@ import logging
 
 
 # Hint Server (Package)
-hintserver_server_log = logging.getLogger('dalsasim.server.hintserver')
+hintserver_server_log = logging.getLogger('dalsasim.server.hint_server')
 hintserver_server_log.setLevel(logging.DEBUG)
 hintserver_server_log.addHandler(file_handler)
 

@@ -96,8 +96,10 @@ primary_server_log.addHandler(file_handler)
 # 2nd level
 # ========================
 
-# Main Structure Client Log (Class)
-
+# # Main Structure Client Log (Class)
+# client_log = logging.getLogger('dalsasim.server.client')
+# client_log.setLevel(logging.DEBUG)
+# client_log.addHandler(file_handler)
 
 # Main Structure Server Log (Class)
 
@@ -109,6 +111,9 @@ primary_server_log.addHandler(file_handler)
 
 # hint_server_log.addHandler(socket_handler)
 # -------------------------------------
+hintserver_server_log = logging.getLogger('dalsasim.server.hint_server')  # type: logging
+hintserver_server_log.setLevel(logging.DEBUG)
+hintserver_server_log.addHandler(file_handler)
 
 # Log Server (Package)
 server_logserver_log = logging.getLogger('dalsasim.server.logserver')
@@ -126,17 +131,29 @@ dalsa_log_server = logging.getLogger('dalsasim.server.logserver.log_server_main'
 dalsa_log_server.setLevel(logging.DEBUG)
 dalsa_log_server.addHandler(file_handler)
 
+# cli Log
+cli_dalsa_log = logging.getLogger('dalsasim.cli')  # type: logging
+cli_dalsa_log.setLevel(logging.DEBUG)
+cli_dalsa_log.addHandler(file_handler)
 
+# Log Client
+log_client_log = logging.getLogger('dalsasim.server.logserver.log_client')
+log_client_log.setLevel(logging.DEBUG)
+log_client_log.addHandler(file_handler)
 
-# Hint Server (Class)
-hintserver_server_log = logging.getLogger('dalsasim.server.hintserver.hint_server')
-hintserver_server_log.setLevel(logging.DEBUG)
-hintserver_server_log.addHandler(file_handler)
-# hintserver_server_log.addHandler(socket_handler)
-# -------------------------------------
+# Log Server
+log_server_log = logging.getLogger('dalsasim.server.log.log_server')
+log_server_log.setLevel(logging.DEBUG)
+log_server_log.addHandler(file_handler)
 
 
 # Cam Server (Class)
 cam_server_log = logging.getLogger('dalsasim.server.camserver.cam_server')
 cam_server_log.setLevel(logging.DEBUG)
 cam_server_log.addHandler(file_handler)
+
+
+# simulator_main log (class)
+sim_main_log = logging.getLogger('dalsasim.server.camserver.simulator_main')
+sim_main_log.setLevel((logging.DEBUG))
+sim_main_log.addHandler(file_handler)

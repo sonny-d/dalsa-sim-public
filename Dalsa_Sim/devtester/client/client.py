@@ -5,10 +5,12 @@ import json
 import logging
 from log.log import file_handler
 
+
 # Creating Log For the class
 server_client_log = logging.getLogger('dalsasim.server.client')
 server_client_log.setLevel(logging.DEBUG)
 server_client_log.addHandler(file_handler)
+
 # -------------------------------------
 hostname = socket.gethostname()
 
@@ -40,13 +42,15 @@ class Client(object):
     # Must be connected to server
     # ================================= #
 
-    def __init__(self, client_name, client_port, client_connection=None, client_socket=None):
+    def __init__(self, server_hostname, client_name, client_port, client_connection=None, client_socket=None):
         # Calling super to create inheritance smoother
         super(Client, self).__init__()
         self.client_port = client_port
         # This variable will be used to differentiate between clients
         self.client_name = client_name
-        self.host_name = hostname
+
+        # Set hostname of the server to connect to
+        self.host_name = server_hostname
         self.client_connection = client_connection
         # Creating a socket with None. Will prevent from sending without connecting
         #  Creating a actual socket when calling .connect()
@@ -61,8 +65,13 @@ class Client(object):
     # ================================= #
 
     def send(self, package):
+
+        # Creating final result variable
+        final_result = ''
+        # If there is a socket
         final_result = False
         if self.client_socket:
+            # Grabbing length of package
             length_package = len(package)
             if package is not None:
                 if self.client_connection:
@@ -220,6 +229,7 @@ class Client(object):
             # Logging
             server_client_log.info('On %s, Connected [Client %s on Port: %s]', self.client_name, self.host_name,
                                    str(self.client_port))
+            pass
         # Catch socket error
         except (socket.error, socket.herror, socket.gaierror, socket.timeout) as e:
             # Log socket error
@@ -227,6 +237,7 @@ class Client(object):
                                     str(self.client_port))
             server_client_log.error('dalsa_server is most likely down :(')
             self.client_connection = False
+            pass
 
     # ================================= #
     # Date : November 20, 2018
@@ -253,8 +264,10 @@ class Client(object):
     def listen(self, number_of_request):
         if self.client_socket:
             self.client_socket.listen(number_of_request)
+            pass
         else:
             server_client_log.error('No socket to listen on: [%s Port: %s]', self.client_name, str(self.client_port))
+            pass
 
     # ================================= #
     # Date : February 20, 2018
@@ -288,3 +301,6 @@ class Client(object):
                                     self.client_name, str(self.client_name))
             server_client_log.error("Returning None")
             return None
+
+
+
