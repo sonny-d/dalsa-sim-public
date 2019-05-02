@@ -1,7 +1,7 @@
 # log/log.py
 from format.dalsa_log_format import file_handler_format
 import logging
-import os
+import os, datetime
 
 
 # Created By : Benjamin Nelligan
@@ -57,65 +57,7 @@ file_handler = logging.FileHandler(log_location)
 file_handler.setFormatter(file_handler_format)
 # ==================================
 
-# Creating Logs & Adding Handlers
-# ==================================
-
-# ========================
-# Root
-# ========================
-"""dalsa_sim_log = logging.getLogger('dalsasim')  # type: logging
-dalsa_sim_log.setLevel(logging.DEBUG)
-dalsa_sim_log.addHandler(file_handler)"""
-# dalsa_sim_log.addHandler(socket_handler)
-# -------------------------------------
 
 
-# ========================
-# 1st Level MAY NOT NEED TO HAVE THESE PACKAGES INSTANTIATED
-# ========================
-
-# -------------------------------------
 
 
-# ========================
-# 2nd level
-# ========================
-
-# hint_server_log.addHandler(socket_handler)
-# -------------------------------------
-
-# Log Server (Package)
-server_logserver_log = logging.getLogger('dalsasim.server.logserver')
-server_logserver_log.setLevel(logging.DEBUG)
-server_logserver_log.addHandler(file_handler)
-# -------------------------------------
-
-# ========================
-# 3rd level
-# ========================
-
-
-# cli log
-cli_tester_log = logging.getLogger('devtester.cli')
-cli_tester_log.setLevel(logging.DEBUG)
-cli_tester_log.addHandler(file_handler)
-
-# Hint Client (Class)
-hintclient_log = logging.getLogger('devtester.client.hint_client')
-hintclient_log.setLevel(logging.DEBUG)
-hintclient_log.addHandler(file_handler)
-# hintserver_server_log.addHandler(socket_handler)
-# -------------------------------------
-
-client_log = logging.getLogger('devtester.client.hint_client')
-client_log.setLevel(logging.DEBUG)
-client_log.addHandler(file_handler)
-
-camclient_log = logging.getLogger('devtester.client.camclient')
-camclient_log.setLevel(logging.DEBUG)
-camclient_log.addHandler(file_handler)
-
-# Cam Server (Class)
-cam_server_log = logging.getLogger('dalsasim.server.camserver.cam_server')
-cam_server_log.setLevel(logging.DEBUG)
-cam_server_log.addHandler(file_handler)

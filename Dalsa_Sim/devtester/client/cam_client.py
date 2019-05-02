@@ -2,10 +2,14 @@
 """
 This is a straight copy of hint_client_main
 """
-
+import logging
 from client import Client
-# from . import cam_client_name
-# from . import cam_port
+from log.log import file_handler
+
+cam_client_log = logging.getLogger('devtester.client.cam_client')
+cam_client_log.setLevel(logging.DEBUG)
+cam_client_log.addHandler(file_handler)
+cam_client_log.debug("Created Instance of Cam_Client_Log")
 
 
 class CamServerClient(Client):

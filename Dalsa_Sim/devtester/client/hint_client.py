@@ -31,6 +31,7 @@ if __name__ == "__main__":
     hostname = "localhost"
     hint_client = HintClient(hostname, port, client_name)
     print "Hostname is: " + hint_client.host_name
+    hintserver_client_log.debug("Hostname is: %s", hint_client.host_name)
     hint_client.connect()
     response = hint_client.send('Hello my name is brendino 20380y89h349f93n4f834nf930$')
     print "On: " + hint_client.client_name + "  Success Status: " + str(response)

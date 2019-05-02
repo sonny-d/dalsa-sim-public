@@ -5,7 +5,6 @@ import json
 import logging
 from log.log import file_handler
 
-
 # Creating Log For the class
 server_client_log = logging.getLogger('dalsasim.server.client')
 server_client_log.setLevel(logging.DEBUG)
@@ -32,8 +31,9 @@ class Client(object):
     client_socket = None  # type: socket
     client_name = None  # type: str
     client_port = None  # type: int
-    SUCCESS_MSG = "SUCCESS"  # TODO: constants should be defined at module level
-    FAIL_MSG = "FAILURE"
+    # Send/Receive delimiters
+    recv_delim = "\r"
+    send_delim = recv_delim
 
     # ================================= #
     # Date : February 1, 2019
@@ -55,8 +55,8 @@ class Client(object):
         # Creating a socket with None. Will prevent from sending without connecting
         #  Creating a actual socket when calling .connect()
         self.client_socket = client_socket
-        server_client_log.info('Hostname: %s Created Client: %s on Port: %s', self.host_name, self.client_name,
-                               self.client_port)
+        server_client_log.debug('Hostname: %s Created Client: %s on Port: %s', self.host_name, self.client_name,
+                                self.client_port)
 
     # ================================= #
     # Date : February 15, 2019
@@ -65,32 +65,26 @@ class Client(object):
     # ================================= #
 
     def send(self, package):
-
-        # Creating final result variable
-        final_result = ''
-        # If there is a socket
         final_result = False
         if self.client_socket:
-            # Grabbing length of package
-            length_package = len(package)
             if package is not None:
                 if self.client_connection:
-                    if length_package != 0:
-                        result = self._send_chunk(package)
-
-                        print "DEBUG: send() - result of _send_chunk = " + str(result)
-                        if result is not True:
-                            print "ERROR: Unable to send package"
-                            server_client_log.error("Unable to send package.")
-                        else:
-                            server_client_log.info("Information Sent... Waiting for Response")
-                            print "DEBUG: Trying to receive a response package..."
-
-                            response = self._receive_response()
-                            print "DEBUG: Response from Server = " + str(response)
-
-                            if response == self.SUCCESS_MSG:
-                                final_result = True
+                    result = self._send_chunk(package)
+                    #print "DEBUG: send() - result of _send_chunk = " + str(result)
+                    server_client_log.info("send() - result of _send_chunk = %s", str(result))
+                    if result is not True:
+                        print "ERROR: Unable to send package"
+                        server_client_log.error("Unable to send package.")
+                    else:
+                        # If result is good, put into receive mode for response
+                        server_client_log.info("Information Sent... Waiting for Response")
+                        print "DEBUG: client.send() - Trying to receive a response package..."
+                        server_client_log.info("send() - Trying to receive response package")
+                        response = self._receive_response()
+                        print "DEBUG: Response from Server = " + str(response)
+                        server_client_log.debug("Response from Server: %s", str(response))
+                        # TODO: What should we do with Response from server? probably parse success/fail?
+                        final_result = str(response)
         return final_result
 
     def _send_chunk(self, chunk):
@@ -99,33 +93,32 @@ class Client(object):
         :param chunk:
         :return:
         """
-        package = chunk
-        length_package = len(package)
-        if package is not None:
+        if chunk is not None:
+            package = str(chunk)
+            # Check if last char in string is carriage return
+            if package[-1:] != self.send_delim:
+                package += self.send_delim  # TEMP should use var
+            #print "DEBUG: send_chunk, to send: " + package
+            server_client_log.debug("send_chunk: Chunk to send: %s", package)
             try:
-                # Send header: 3 digit string that = length of main package string
-                package_length = str(length_package).zfill(3)  # zfill adds zeros to front so string is 3 char total
-                print "DEBUG: package to send = " + package + "  Length = " + str(package_length)
-                self.client_socket.send(package_length)
-                # self.client_socket.send(str(length_package))
-                server_client_log.info('Outgoing Package length: %s', length_package)
-                # Sending the rest of the package
-                try:
+                if self.client_socket:
                     self.client_socket.sendall(package)
-                    server_client_log.info("Information Sent... Waiting for Response")
-                    # dalsa_client_log.info('Sent: %s', package)
+                    server_client_log.debug("Information Sent %s... Waiting for Response", package)
+                    #print "DEBUG: chunk sent OK"
+                    server_client_log.debug("Chunk sent... OK")
                     return True
-                except (socket.timeout, socket.error, socket.gaierror, socket.herror) as e:
-                    server_client_log.error('Information not Sent: %s', e)
-                    server_client_log.info('hint: its gonna be None')
+                else:
+                    server_client_log.error("No Socket on %s", self.client_name)
+                    print "ERROR: no client socket"
+                    server_client_log.error("No client Socket")
                     return False
-            except(socket.timeout, socket.error, socket.gaierror, socket.herror) as e:
-                server_client_log.error('Socket Error Length of Package not Sent: %s', e)
+            except (socket.timeout, socket.error, socket.gaierror, socket.herror) as e:
+                server_client_log.error('Information not Sent: %s', e)
                 return False
         else:
             return False
 
-    def _receive_response(self):
+    def _receive_response(self, delimiter=recv_delim):
         """
         Duplicates the receive method in server.
         TODO: DRY
@@ -134,82 +127,59 @@ class Client(object):
         result = []  # Create an array to contain result chars
         if self.client_socket:
             try:
-                print "DEBUG: Client Listening for a Response from Server..."
-                connection = self.client_socket
+                #print "DEBUG: _receive_response: Client Listening for a Response from Server..."
+                server_client_log.debug("_receive_response: Client Listening for a Response from Server...")
+                # Loop byte by byte and stop once delimiter received
+                bite_size = 1
+                char = ""
+                flag = False
+                while not flag:
+                    lil_byte = ""
+                    try:
+                        # Try to receive 1 byte from socket buffer
+                        lil_byte = self.client_socket.recv(bite_size)
+                        # Check if this byte is the delimiter
+                        if lil_byte == delimiter:
+                            #print "WHOA BUDDY, thats the delimiter"
+                            flag = True
+                            break
+                    except socket.timeout as e:
+                        server_client_log.error("Socket Timeout: %s", e)
+                        pass
+                    # This logger is VERY wordy, saved for troubleshooting.
+                    #server_client_log.debug("Type of lil_byte is: " + str(type(lil_byte)) + "and is " + str(lil_byte))
+                    # Add each byte to a char list named result
+                    if lil_byte is not "":
+                        char = str(lil_byte)
+                        result.append(char)
+                        server_client_log.debug("Byte char: %s", char)
 
-                # Begin Receive
-                # Expect 3 char header with the length of the data
-                data_length = connection.recv(3)
-                #print "DEBUG: data_length = " + str(data_length)
-                data_length = data_length.strip()
-                if len(data_length) == 0:
-                    server_client_log.error('Received nothing in response')
-                data_recv = 1
-                # TODO: Add error handling for if first 3 chars are not numbers... ie base10 error
-                # Receive the specified number of characters
-                data_length = int(data_length)
-                while data_recv <= data_length:
-                    # May be better to receive 2 + bytes at a type according to docs...
-                    lil_byte = connection.recv(1)
-                    # Append the byte to the result string
-                    # TODO: Test this error handling logic
-                    if lil_byte != 0:
-                        result.append(str(lil_byte))
-                        server_client_log.debug("Data: %s", str(lil_byte))
                     else:
-                        print "ERROR: lil_byte is 0 - so connection lost?"
-                        server_client_log.error('Connection Lost')
-                    data_recv = data_recv + len(lil_byte)
-                # Clean up the result
+                        server_client_log.error("Byte is blank - so connection lost?")
+                        server_client_log.error('Connection Lost: %s on: %s', self.client_name, self.host_name)
+                # Clean up the final result
                 final_result = ''
                 if result is not None:
                     for x in result:
-                        final_result = final_result + x
-                    server_client_log.info('On %s Result from Server Received: %s', self.client_name, final_result)
-                    #print "DEBUG: Result string = " + final_result
-
-                    return final_result
+                        final_result += x
+                    server_client_log.info('On %s Package Received: %s', self.client_name, final_result)
+                    print "DEBUG: Result string = " + final_result
             except (socket.error, socket.timeout, socket.gaierror, socket.herror) as e:
+                print "ERROR: Socket error when receiving. See logs."
                 server_client_log.error("Socket Error When Receiving: %s", e)
+                return False
+
+            server_client_log.debug("Data: %s", final_result)
+            if final_result is not "":
+                return final_result
+            else:
+                print "Error receiving response from server"
+                server_client_log.error("Data is None.... it's a problem")
+                return False
         else:
+            print "ERROR: client_socket not OK"
+            server_client_log.error("_receive_response: self.client_socket not alive... ")
             return False
-
-    # ================================= #
-    # Date : February 20, 2018
-    # Created By : Benjamin Nelligan
-    # Description : Will initialize the client to receive and listen to information.
-    # Will try to unload data with json and return the data
-    # ================================= #
-
-    def receive(self):
-        result = []
-        if self.client_socket:
-            server_client_log.info('%s is Listening on Port: %s', self.client_name, self.client_port)
-            # Accepting new Connection
-            # The first is the length of the data
-            data_length = self.client_socket.recv(1024)
-            data_length = data_length.strip()
-            if len(data_length) == 0:
-                server_client_log.error('Received nothing from: %s on Port: %s', self.client_connection,
-                                        str(self.client_port))
-            data_recv = 1
-            data_length = data_length.strip()
-            data_length = len(data_length)
-            while data_recv < data_length:
-                data = self.client_socket.recv(data_recv)
-                if data != 0:
-                    result.append(str(data))
-                else:
-                    server_client_log.error('Connection Lost: %s on: %s', self.client_name, self.client_connection)
-                    self.client_connection = None
-                data_recv = data_recv + len(str(data))
-            server_client_log.info('On %s Package Received: %s', self.client_name, result)
-            final_result = ''
-            if result is not None:
-                for x in result:
-                    final_result = final_result + x
-            server_client_log.info('On %s Package Received: %s', self.client_name, final_result)
-            return final_result
 
     # ================================= #
     # Date : February 21, 2019
@@ -301,6 +271,3 @@ class Client(object):
                                     self.client_name, str(self.client_name))
             server_client_log.error("Returning None")
             return None
-
-
-
