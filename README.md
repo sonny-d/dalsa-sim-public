@@ -59,7 +59,7 @@ Clone or download source code from github.
 This prototype supports the following API.
 ```json
 {
-  "test-id": "(int) Sequentially generated test ID",
+  "test-id": "(int) Manually entered test ID",
   "qr": "(string) Barcode ID value",
   "weather-cond": "(string) good/bad",
   "no-response": "(boolean) true/false",
